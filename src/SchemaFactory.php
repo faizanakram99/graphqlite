@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TheCodingMachine\GraphQLite;
 
 use GraphQL\Type\SchemaConfig;
-use Kcs\ClassFinder\Finder\FinderInterface;
+use Mouf\Composer\ClassNameMapper;
 use MyCLabs\Enum\Enum;
 use PackageVersions\Versions;
 use Psr\Container\ContainerInterface;
@@ -103,7 +103,7 @@ class SchemaFactory
 
     private NamingStrategyInterface|null $namingStrategy = null;
 
-    private FinderInterface|null $finder = null;
+    private ClassNameMapper|null $classNameMapper = null;
 
     private SchemaConfig|null $schemaConfig = null;
 
@@ -239,9 +239,9 @@ class SchemaFactory
         return $this;
     }
 
-    public function setFinder(FinderInterface $finder): self
+    public function setClassNameMapper(ClassNameMapper $classNameMapper): self
     {
-        $this->finder = $finder;
+        $this->classNameMapper = $classNameMapper;
 
         return $this;
     }
@@ -321,7 +321,7 @@ class SchemaFactory
         $namingStrategy = $this->namingStrategy ?: new NamingStrategy();
         $typeRegistry = new TypeRegistry();
 
-        $namespaceFactory = new NamespaceFactory($namespacedCache, $this->finder, $this->globTTL);
+        $namespaceFactory = new NamespaceFactory($namespacedCache, $this->classNameMapper, $this->globTTL);
         $nsList = array_map(
             static fn (string $namespace) => $namespaceFactory->createNamespace($namespace),
             $this->typeNamespaces,
@@ -470,7 +470,7 @@ class SchemaFactory
                 $this->container,
                 $annotationReader,
                 $namespacedCache,
-                $this->finder,
+                $this->classNameMapper,
                 $this->globTTL,
             );
         }

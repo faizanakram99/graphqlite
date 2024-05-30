@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace TheCodingMachine\GraphQLite\Utils\Namespaces;
 
-use Kcs\ClassFinder\Finder\ComposerFinder;
-use Kcs\ClassFinder\Finder\FinderInterface;
+use Mouf\Composer\ClassNameMapper;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -15,16 +14,16 @@ use Psr\SimpleCache\CacheInterface;
  */
 final class NamespaceFactory
 {
-    private FinderInterface $finder;
+    private ClassNameMapper $classNameMapper;
 
-    public function __construct(private readonly CacheInterface $cache, FinderInterface|null $finder = null, private int|null $globTTL = 2)
+    public function __construct(private readonly CacheInterface $cache, ClassNameMapper|null $classNameMapper = null, private int|null $globTTL = 2)
     {
-        $this->finder = $finder ?? new ComposerFinder();
+        $this->classNameMapper = $classNameMapper ?? ClassNameMapper::createFromComposerFile(null, null, true);
     }
 
     /** @param string $namespace A PHP namespace */
-    public function createNamespace(string $namespace): NS
+    public function createNamespace(string $namespace, bool $recursive = true): NS
     {
-        return new NS($namespace, $this->cache, clone $this->finder, $this->globTTL);
+        return new NS($namespace, $this->cache, $this->classNameMapper, $this->globTTL, $recursive);
     }
 }
