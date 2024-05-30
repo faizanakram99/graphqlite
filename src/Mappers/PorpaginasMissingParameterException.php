@@ -28,4 +28,14 @@ class PorpaginasMissingParameterException extends Exception implements ClientAwa
     {
         return true;
     }
+
+    /**
+     * Returns string describing a category of the error.
+     *
+     * Value "graphql" is reserved for errors produced by query parsing or validation, do not use it.
+     */
+    public function getCategory(): string
+    {
+        return 'pagination';
+    }
 }
