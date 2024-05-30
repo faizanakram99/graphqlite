@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TheCodingMachine\GraphQLite;
 
 use GraphQL\Type\SchemaConfig;
-use Kcs\ClassFinder\Finder\ComposerFinder;
 use Kcs\ClassFinder\Finder\FinderInterface;
 use MyCLabs\Enum\Enum;
 use PackageVersions\Versions;
@@ -321,9 +320,8 @@ class SchemaFactory
         $cachedDocBlockFactory = new CachedDocBlockFactory($namespacedCache);
         $namingStrategy = $this->namingStrategy ?: new NamingStrategy();
         $typeRegistry = new TypeRegistry();
-        $finder = $this->finder ?? new ComposerFinder();
 
-        $namespaceFactory = new NamespaceFactory($namespacedCache, $finder, $this->globTTL);
+        $namespaceFactory = new NamespaceFactory($namespacedCache, $this->finder, $this->globTTL);
         $nsList = array_map(
             static fn (string $namespace) => $namespaceFactory->createNamespace($namespace),
             $this->typeNamespaces,
@@ -472,7 +470,7 @@ class SchemaFactory
                 $this->container,
                 $annotationReader,
                 $namespacedCache,
-                $finder,
+                $this->finder,
                 $this->globTTL,
             );
         }

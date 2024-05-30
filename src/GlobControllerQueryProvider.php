@@ -6,6 +6,7 @@ namespace TheCodingMachine\GraphQLite;
 
 use GraphQL\Type\Definition\FieldDefinition;
 use InvalidArgumentException;
+use Kcs\ClassFinder\Finder\ComposerFinder;
 use Kcs\ClassFinder\Finder\FinderInterface;
 use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;
@@ -32,6 +33,7 @@ final class GlobControllerQueryProvider implements QueryProviderInterface
 {
     /** @var array<int,string>|null */
     private array|null $instancesList = null;
+    private FinderInterface $finder;
     private AggregateControllerQueryProvider|null $aggregateControllerQueryProvider = null;
     private CacheContractInterface $cacheContract;
 
@@ -45,10 +47,11 @@ final class GlobControllerQueryProvider implements QueryProviderInterface
         private readonly ContainerInterface $container,
         private readonly AnnotationReader $annotationReader,
         private readonly CacheInterface $cache,
-        private readonly FinderInterface $finder,
+        FinderInterface|null $finder = null,
         int|null $cacheTtl = null,
     )
     {
+        $this->finder = $finder ?? new ComposerFinder();
         $this->cacheContract = new Psr16Adapter(
             $this->cache,
             str_replace(['\\', '{', '}', '(', ')', '/', '@', ':'], '_', $namespace),
